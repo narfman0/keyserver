@@ -5,11 +5,13 @@ from keyserver.settings import BUFFER_SIZE, STRUCT_FORMAT,\
     TCP_PORT, TCP_IP, SERVER_TYPE, UDP_IP, UDP_PORT
 
 
+CREATE_MSG = struct.pack('c', b'C')
+
+
 def run_udp(ip=UDP_IP, port=UDP_PORT):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     while True:
-        message = "C"
-        sock.sendto(message, (ip, port))
+        sock.sendto(CREATE_MSG, (ip, port))
         data, addr = sock.recvfrom(BUFFER_SIZE)
         key = struct.unpack(STRUCT_FORMAT, data)[0]
         if key % 10000 == 0:
@@ -21,7 +23,7 @@ def run_tcp(ip=TCP_IP, port=TCP_PORT):
     s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
     s.connect((ip, port))
     while True:
-        s.send('C')
+        s.send(CREATE_MSG)
         data = s.recv(BUFFER_SIZE)
     s.close()
 
